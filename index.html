@@ -17,37 +17,27 @@
             <span class="brand-name">CHASED</span>
         </div>
 
-        <!-- Desktop Navigation (text-based) -->
         <nav class="header-nav desktop-nav">
             <a href="#" class="nav-link" data-section="home">Home</a>
-            <a href="#" id="help-link">Help</a>
-            <a href="#" id="contact-link">Contact</a>
+            <a href="#" class="nav-link" id="help-link">Help</a>
+            <a href="#" class="nav-link" id="contact-link">Contact</a>
+            <a href="#" class="nav-link" data-section="profile">Profile</a>
             <div class="header-search" id="header-search">
                 <i class="fas fa-search search-icon" id="search-toggle"></i>
                 <input type="text" class="search-input" id="search-input" placeholder="Search products...">
             </div>
         </nav>
 
-        <!-- Mobile Navigation (icon-based) -->
         <nav class="header-nav mobile-nav">
-            <a href="#" class="mobile-nav-icon" data-section="home" aria-label="Home">
-                <i class="fas fa-home"></i>
-            </a>
-            <a href="#" class="mobile-nav-icon" data-section="buy" aria-label="Catalog">
-                <i class="fas fa-th-large"></i>
-            </a>
-            <a href="#" class="mobile-nav-icon" data-section="wishlist" aria-label="Wishlist">
-                <i class="fas fa-heart"></i>
-            </a>
-            <a href="#" class="mobile-nav-icon" id="help-link-mobile" aria-label="Help">
-                <i class="fas fa-question-circle"></i>
-            </a>
-            <a href="#" class="mobile-nav-icon" id="contact-link-mobile" aria-label="Contact">
-                <i class="fas fa-envelope"></i>
-            </a>
-            <a href="#" class="mobile-nav-icon" data-section="profile" aria-label="Profile">
-                <i class="fas fa-user"></i>
-            </a>
+            <a href="#" class="mobile-nav-link" data-section="home">HOME</a>
+            <a href="#" class="mobile-nav-link" id="mobile-help-link">HELP</a>
+            <a href="#" class="mobile-nav-link" id="mobile-contact-link">CONTACT</a>
+            <a href="#" class="mobile-nav-link" data-section="profile">PROFILE</a>
+            <div class="header-search mobile-search" id="mobile-header-search">
+                <i class="fas fa-search mobile-search-icon" id="mobile-search-toggle"></i>
+                <input type="text" class="search-input" id="mobile-search-input" placeholder="Search...">
+                <i class="fas fa-times mobile-search-close" id="mobile-search-close"></i>
+            </div>
         </nav>
     </header>
 
@@ -118,8 +108,10 @@
                     <div class="hero-content">
                         <h1 class="hero-title">Welcome to CHASED</h1>
                         <p class="hero-subtitle">chase the ideal beauty</p>
-                        <p class="hero-description">Discover premium boots and bags crafted for the modern woman.
-                            Explore our exclusive collection of luxury footwear and accessories.</p>
+                        <p class="hero-description">
+                            Discover premium boots and bags crafted for the modern woman.<br>
+                            Explore our exclusive collection of luxury footwear and accessories.
+                        </p>
                         <div class="hero-actions">
                             <button class="btn btn-primary hero-btn" onclick="navigateToSection('buy')">Shop
                                 Now</button>

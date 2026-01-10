@@ -22,7 +22,18 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeProfileForms();
     initializeProductCategories();
     initializeHeaderInteractions();
+    initializeMobileCart();
 });
+
+function initializeMobileCart() {
+    const mobileCartBtn = document.getElementById('cart-link-mobile');
+    if (mobileCartBtn) {
+        mobileCartBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showCartModal();
+        });
+    }
+}
 
 // ===================================
 // SIDEBAR TOGGLE
@@ -132,13 +143,21 @@ function handleAddToCart(event) {
 
 function updateCartCount() {
     const countElement = document.getElementById('cart-count');
+    const mobileCountElement = document.getElementById('cart-count-mobile');
+
     if (countElement) {
         countElement.textContent = cartCount;
-
-        // Animate the count
         countElement.style.transform = 'scale(1.3)';
         setTimeout(() => {
             countElement.style.transform = 'scale(1)';
+        }, 200);
+    }
+
+    if (mobileCountElement) {
+        mobileCountElement.textContent = cartCount;
+        mobileCountElement.style.transform = 'scale(1.3)';
+        setTimeout(() => {
+            mobileCountElement.style.transform = 'scale(1)';
         }, 200);
     }
 }
@@ -505,7 +524,7 @@ function animate360Rotation() {
 // ===================================
 function initializeNavigation() {
     // Add click handlers to navigation links with data-section attribute
-    const navLinks = document.querySelectorAll('.nav-link[data-section]');
+    const navLinks = document.querySelectorAll('.nav-link[data-section], .mobile-nav-link[data-section], .mobile-nav-icon[data-section]');
 
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -554,26 +573,32 @@ window.navigateToSection = navigateToSection;
 // HEADER MINI-INTERACTIONS (Help, Contact)
 // ===================================
 function initializeHeaderInteractions() {
-    const helpLink = document.querySelector('.header-nav a:nth-child(2)');
-    const contactLink = document.querySelector('.header-nav a:nth-child(3)');
+    const helpLinks = [document.getElementById('help-link'), document.getElementById('mobile-help-link')];
+    const contactLinks = [document.getElementById('contact-link'), document.getElementById('mobile-contact-link')];
     const helpModal = document.getElementById('help-modal');
     const contactModal = document.getElementById('contact-modal');
     const closeHelp = document.getElementById('close-help');
     const closeContact = document.getElementById('close-contact');
 
-    if (helpLink && helpModal) {
-        helpLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            helpModal.classList.add('active');
-        });
-    }
+    // Help Links
+    helpLinks.forEach(link => {
+        if (link && helpModal) {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                helpModal.classList.add('active');
+            });
+        }
+    });
 
-    if (contactLink && contactModal) {
-        contactLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            contactModal.classList.add('active');
-        });
-    }
+    // Contact Links
+    contactLinks.forEach(link => {
+        if (link && contactModal) {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                contactModal.classList.add('active');
+            });
+        }
+    });
 
     [closeHelp, closeContact].forEach(btn => {
         if (btn) {
@@ -594,95 +619,111 @@ function initializeHeaderInteractions() {
             });
         }
     });
+}
+// Handle contact form submission
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const btn = contactForm.querySelector('button');
+        const originalText = btn.textContent;
+        btn.textContent = 'Sending...';
+        btn.disabled = true;
 
-    // Handle contact form submission
-    const contactForm = document.getElementById('contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = contactForm.querySelector('button');
-            const originalText = btn.textContent;
-            btn.textContent = 'Sending...';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                alert('Thank you for your message. CHASED support will contact you shortly.');
-                btn.textContent = originalText;
-                btn.disabled = false;
-                contactForm.reset();
-                contactModal.classList.remove('active');
-            }, 1000);
-        });
-    }
+        setTimeout(() => {
+            alert('Thank you for your message. CHASED support will contact you shortly.');
+            btn.textContent = originalText;
+            btn.disabled = false;
+            contactForm.reset();
+            contactModal.classList.remove('active');
+        }, 1000);
+    });
 }
 
 // ===================================
 // HEADER SEARCH TOGGLE
 // ===================================
 function initializeHeaderSearch() {
+    // Desktop Search
     const searchContainer = document.getElementById('header-search');
     const searchToggle = document.getElementById('search-toggle');
     const searchInput = document.getElementById('search-input');
 
+    // Mobile Search
+    const mobileSearchContainer = document.getElementById('mobile-header-search');
+    const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+    const mobileSearchInput = document.getElementById('mobile-search-input');
+    const mobileSearchClose = document.getElementById('mobile-search-close');
+
+    function handleSearchEnter(e, input, container) {
+        if (e.key === 'Enter') {
+            const query = input.value.toLowerCase().trim();
+            let categoryToSelect = '';
+
+            const keywords = {
+                pants: ['pants', 'trousers', 'jeans', 'leggings', 'bottoms', 'slacks'],
+                jewelry: ['jewelry', 'jewelary', 'accessory', 'necklace', 'ring', 'earring', 'bracelet', 'gem', 'gold', 'silver'],
+                tops: ['tops', 'top', 'shirt', 'blouse', 'sweater', 'tshirt', 'tee', 'hoodie', 'jacket', 'coat'],
+                dresses: ['dresses', 'dress', 'gown', 'skirt', 'maxi', 'mini', 'midi'],
+                footwear: ['footwear', 'shoes', 'shoe', 'boots', 'sneakers', 'heels', 'sandals', 'flats']
+            };
+
+            for (const [category, synonyms] of Object.entries(keywords)) {
+                if (synonyms.some(syn => query.includes(syn))) {
+                    categoryToSelect = category;
+                    break;
+                }
+            }
+
+            if (categoryToSelect) {
+                navigateToSection('buy');
+                const tab = document.querySelector(`.category-tab[data-category="${categoryToSelect}"]`);
+                if (tab) tab.click();
+                input.value = '';
+                container.classList.remove('expanded');
+            }
+        }
+    }
+
+    // Desktop Event Listeners
     if (searchToggle && searchContainer && searchInput) {
-        // Toggle search on icon click
         searchToggle.addEventListener('click', (e) => {
             e.stopPropagation();
             searchContainer.classList.toggle('expanded');
-
-            if (searchContainer.classList.contains('expanded')) {
-                searchInput.focus();
-            }
+            if (searchContainer.classList.contains('expanded')) searchInput.focus();
         });
 
-        // Close search when clicking outside
         document.addEventListener('click', (e) => {
-            if (!searchContainer.contains(e.target)) {
-                searchContainer.classList.remove('expanded');
-            }
+            if (!searchContainer.contains(e.target)) searchContainer.classList.remove('expanded');
         });
 
-        // Prevent closing when clicking inside search input
-        searchInput.addEventListener('click', (e) => {
+        searchInput.addEventListener('click', (e) => e.stopPropagation());
+        searchInput.addEventListener('keydown', (e) => handleSearchEnter(e, searchInput, searchContainer));
+    }
+
+    // Mobile Event Listeners
+    if (mobileSearchToggle && mobileSearchContainer && mobileSearchInput) {
+        mobileSearchToggle.addEventListener('click', (e) => {
             e.stopPropagation();
+            mobileSearchContainer.classList.add('expanded');
+            mobileSearchInput.focus();
         });
 
-        // Handle search on Enter key
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const query = searchInput.value.toLowerCase().trim();
-                let categoryToSelect = '';
+        if (mobileSearchClose) {
+            mobileSearchClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                mobileSearchContainer.classList.remove('expanded');
+            });
+        }
 
-                // Keyword mapping with expanded synonyms
-                const keywords = {
-                    pants: ['pants', 'trousers', 'jeans', 'leggings', 'bottoms', 'slacks'],
-                    jewelry: ['jewelry', 'jewelary', 'accessory', 'necklace', 'ring', 'earring', 'bracelet', 'gem', 'gold', 'silver'],
-                    tops: ['tops', 'top', 'shirt', 'blouse', 'sweater', 'tshirt', 'tee', 'hoodie', 'jacket', 'coat'],
-                    dresses: ['dresses', 'dress', 'gown', 'skirt', 'maxi', 'mini', 'midi'],
-                    footwear: ['footwear', 'shoes', 'shoe', 'boots', 'sneakers', 'heels', 'sandals', 'flats']
-                };
+        mobileSearchInput.addEventListener('click', (e) => e.stopPropagation());
+        mobileSearchInput.addEventListener('keydown', (e) => handleSearchEnter(e, mobileSearchInput, mobileSearchContainer));
 
-                for (const [category, synonyms] of Object.entries(keywords)) {
-                    if (synonyms.some(syn => query.includes(syn))) {
-                        categoryToSelect = category;
-                        break;
-                    }
-                }
-
-                if (categoryToSelect) {
-                    // Navigate to Buy section
-                    navigateToSection('buy');
-
-                    // Select the corresponding category tab
-                    const tab = document.querySelector(`.category-tab[data-category="${categoryToSelect}"]`);
-                    if (tab) {
-                        tab.click();
-                    }
-
-                    // Clear and collapse search
-                    searchInput.value = '';
-                    searchContainer.classList.remove('expanded');
-                }
+        // Re-use desktop click behavior to close mobile search if needed, 
+        // but mobile search has a dedicated close button too.
+        document.addEventListener('click', (e) => {
+            if (!mobileSearchContainer.contains(e.target)) {
+                mobileSearchContainer.classList.remove('expanded');
             }
         });
     }
